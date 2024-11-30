@@ -1,0 +1,9 @@
+ColumnLimit: 100
+IndentWidth: 3
+ContinuationIndentWidth: 3
+AccessModifierOffset: -3
+AllowShortFunctionsOnASingleLine: Empty
+AlignAfterOpenBracket: BlockIndent
+InsertBraces: true
+PackConstructorInitializers: NextLine
+AllowShortLambdasOnASingleLine: Empty
