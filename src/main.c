@@ -91,7 +91,7 @@ __attribute__((naked, noreturn)) void _reset() {
 
 extern void _estack(void);
 
-__attribute__((section(".vectors"))) void (*const vector_table[16 + 96])(void) = {
+__attribute__((section(".vectors"))) void (*const vector_table[16 + 97])(void) = {
    _estack,
    _reset,
 };
