@@ -1,8 +1,11 @@
-firmware.elf: main.o
-	arm-none-eabi-gcc -T src/link.ld -nostdlib main.o -o firmware.elf
+SOURCES = main.c
+OBJECTS = $(SOURCES:.c=.o)
 
-main.o: src/main.c
-	arm-none-eabi-gcc -mcpu=cortex-m4 src/main.c -c -Wall -Wextra -Werror -pedantic -Wno-main
+firmware.elf: $(OBJECTS)
+	arm-none-eabi-gcc -T src/link.ld -nostdlib $(OBJECTS) -o firmware.elf
+
+%.o: src/%.c
+	arm-none-eabi-gcc -mcpu=cortex-m4 $< -c -Wall -Wextra -Werror -pedantic -Wno-main
 
 flash: firmware.bin
 	st-flash --reset write firmware.bin 0x8000000
