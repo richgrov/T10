@@ -11,4 +11,4 @@ firmware.bin: firmware.elf
 	arm-none-eabi-objcopy -O binary firmware.elf firmware.bin
 
 clean:
-	rm firmware.* *.o
+	rm -f firmware.* *.o
