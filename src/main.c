@@ -1,9 +1,14 @@
+#include "config.h"
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
 typedef enum {
    AHB1_CLOCK_ENABLE_GPIOA = (1UL << 0),
 } Ahb1ClockEnable;
+
+typedef enum {
+   APB2_SYSCFG_CLOCK_ENABLE = (1 << 14),
+} Apb2en;
 
 typedef struct {
    volatile uint32_t clock_ctl;
@@ -19,9 +24,37 @@ typedef struct {
    volatile uint32_t _reserved2;
    volatile uint32_t _reserved3;
    volatile uint32_t ahb1_clock_enable;
+   volatile uint32_t ahb2_clock_enable;
+   volatile uint32_t ahb3_clock_enable;
+   volatile uint32_t _reserved4;
+   volatile uint32_t apb1en;
+   volatile uint32_t apb2en;
 } ResetAndClockControl;
 
 #define RCC ((volatile ResetAndClockControl *)0x40023800)
+
+typedef enum {
+   SYSTICK_COUNTER_ENABLE = 1,
+   SYSTICK_INTERRUPT_ON_ZERO = (1 << 1),
+   SYSTICK_USE_PROCESSOR_CLOCK = (1 << 2),
+} SysTickControlStatus;
+
+typedef struct {
+   volatile uint32_t control_status;
+   volatile uint32_t reload_val;
+   volatile uint32_t current_val;
+   volatile uint32_t calibration_val;
+} SystemTick;
+
+#define SysTick ((volatile SystemTick *)0xE000E010)
+
+static void systick_init() {
+   SysTick->control_status =
+      SYSTICK_COUNTER_ENABLE | SYSTICK_INTERRUPT_ON_ZERO | SYSTICK_USE_PROCESSOR_CLOCK;
+   SysTick->reload_val = CLOCK_SPEED_1MS - 1;
+   SysTick->current_val = 0;
+   RCC->apb2en |= APB2_SYSCFG_CLOCK_ENABLE;
+}
 
 typedef struct {
    volatile uint32_t mode;
@@ -61,6 +94,7 @@ void spin(uint32_t delay) {
 }
 
 void main() {
+   systick_init();
    RCC->ahb1_clock_enable |= AHB1_CLOCK_ENABLE_GPIOA;
 
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
@@ -91,7 +125,11 @@ __attribute__((naked, noreturn)) void _reset() {
 
 extern void _estack(void);
 
+void systick_handler() {
+}
+
 __attribute__((section(".vectors"))) void (*const vector_table[16 + 97])(void) = {
    _estack,
    _reset,
+   [15] = systick_handler,
 };
