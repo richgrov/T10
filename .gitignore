@@ -2,3 +2,6 @@ compile_commands.json
 .cache/
 *.FCBak
 *.stl
+*.o
+*.elf
+*.bin
