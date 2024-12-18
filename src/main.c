@@ -39,14 +39,14 @@ typedef struct {
 #define GPIOA ((volatile Gpio *)0x40020000)
 
 typedef enum {
-   GPIO_MODE_INPUT = 0b00,
-   GPIO_MODE_OUTPUT = 0b01,
-   GPIO_MODE_ALT = 0b10,
-   GPIO_MODE_ANALOG = 0b11,
+   GPIO_MODE_INPUT,
+   GPIO_MODE_OUTPUT,
+   GPIO_MODE_ALT,
+   GPIO_MODE_ANALOG,
 } GpioPortMode;
 
 void gpio_set_mode(volatile Gpio *gpio, uint8_t pin, GpioPortMode mode) {
-   gpio->mode &= ~(0b11UL << (pin * 2));
+   gpio->mode &= ~(3 << (pin * 2));
    gpio->mode |= mode << (pin * 2);
 }
 
