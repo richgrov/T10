@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
+static volatile uint32_t systick;
+
 typedef enum {
    AHB1_CLOCK_ENABLE_GPIOA = (1UL << 0),
 } Ahb1ClockEnable;
@@ -87,8 +89,9 @@ void gpio_write_pin(volatile Gpio *gpio, uint8_t pin, bool high) {
    gpio->bit_set_reset = 1 << pin << (high ? 0 : 16);
 }
 
-void spin(uint32_t delay) {
-   while (delay--) {
+void delay(uint32_t ticks) {
+   uint32_t until = systick + ticks;
+   while (systick < until) {
       asm("nop");
    }
 }
@@ -96,14 +99,13 @@ void spin(uint32_t delay) {
 void main() {
    systick_init();
    RCC->ahb1_clock_enable |= AHB1_CLOCK_ENABLE_GPIOA;
-
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
 
    while (true) {
       gpio_write_pin(GPIOA, 5, true);
-      spin(999999);
+      delay(500);
       gpio_write_pin(GPIOA, 5, false);
-      spin(999999);
+      delay(500);
    }
 }
 
@@ -126,6 +128,7 @@ __attribute__((naked, noreturn)) void _reset() {
 extern void _estack(void);
 
 void systick_handler() {
+   ++systick;
 }
 
 __attribute__((section(".vectors"))) void (*const vector_table[16 + 97])(void) = {
