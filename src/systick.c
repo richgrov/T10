@@ -25,7 +25,7 @@ typedef struct {
 void systick_init(void) {
    SysTick->control_status =
       SYSTICK_COUNTER_ENABLE | SYSTICK_INTERRUPT_ON_ZERO | SYSTICK_USE_PROCESSOR_CLOCK;
-   SysTick->reload_val = CLOCK_SPEED_1MS - 1;
+   SysTick->reload_val = CLOCK_SPEED / 1000 - 1;
    SysTick->current_val = 0;
    rcc_apb2_set(APB2_SYSCFG_ENABLE);
 }
