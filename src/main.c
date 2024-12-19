@@ -50,7 +50,7 @@ typedef struct {
 
 #define SysTick ((volatile SystemTick *)0xE000E010)
 
-static void systick_init() {
+static void systick_init(void) {
    SysTick->control_status =
       SYSTICK_COUNTER_ENABLE | SYSTICK_INTERRUPT_ON_ZERO | SYSTICK_USE_PROCESSOR_CLOCK;
    SysTick->reload_val = CLOCK_SPEED_1MS - 1;
@@ -96,7 +96,7 @@ void delay(uint32_t ticks) {
    }
 }
 
-void main() {
+void main(void) {
    systick_init();
    RCC->ahb1_clock_enable |= AHB1_CLOCK_ENABLE_GPIOA;
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
@@ -109,7 +109,7 @@ void main() {
    }
 }
 
-__attribute__((naked, noreturn)) void _reset() {
+__attribute__((naked, noreturn)) void _reset(void) {
    extern long _sbss, _ebss, _sdata, _edata, _sidata;
    for (long *cursor = &_sbss; cursor < &_ebss; ++cursor) {
       *cursor = 0;
@@ -127,7 +127,7 @@ __attribute__((naked, noreturn)) void _reset() {
 
 extern void _estack(void);
 
-void systick_handler() {
+void systick_handler(void) {
    ++systick;
 }
 
