@@ -1,4 +1,4 @@
-SOURCES = main.c
+SOURCES = main.c gpio.c
 OBJECTS = $(SOURCES:.c=.o)
 
 firmware.elf: $(OBJECTS)

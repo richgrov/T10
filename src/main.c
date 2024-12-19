@@ -1,6 +1,8 @@
-#include "config.h"
 #include <stdbool.h>
 #include <stdint-gcc.h>
+
+#include "config.h"
+#include "gpio.h"
 
 static volatile uint32_t systick;
 
@@ -56,37 +58,6 @@ static void systick_init(void) {
    SysTick->reload_val = CLOCK_SPEED_1MS - 1;
    SysTick->current_val = 0;
    RCC->apb2en |= APB2_SYSCFG_CLOCK_ENABLE;
-}
-
-typedef struct {
-   volatile uint32_t mode;
-   volatile uint32_t output_type;
-   volatile uint32_t output_speed;
-   volatile uint32_t pull_up_down;
-   volatile uint32_t input_data;
-   volatile uint32_t output_data;
-   volatile uint32_t bit_set_reset;
-   volatile uint32_t config_lock;
-   volatile uint32_t alt_func_low;
-   volatile uint32_t alt_func_high;
-} Gpio;
-
-#define GPIOA ((volatile Gpio *)0x40020000)
-
-typedef enum {
-   GPIO_MODE_INPUT,
-   GPIO_MODE_OUTPUT,
-   GPIO_MODE_ALT,
-   GPIO_MODE_ANALOG,
-} GpioPortMode;
-
-void gpio_set_mode(volatile Gpio *gpio, uint8_t pin, GpioPortMode mode) {
-   gpio->mode &= ~(3 << (pin * 2));
-   gpio->mode |= mode << (pin * 2);
-}
-
-void gpio_write_pin(volatile Gpio *gpio, uint8_t pin, bool high) {
-   gpio->bit_set_reset = 1 << pin << (high ? 0 : 16);
 }
 
 void delay(uint32_t ticks) {
