@@ -19,6 +19,7 @@ typedef enum {
 #define GPIOC ((volatile Gpio *)0x40020800)
 
 void gpio_set_mode(volatile Gpio *gpio, uint8_t pin, GpioPortMode mode);
+void gpio_set_af(volatile Gpio *gpio, uint8_t pin, uint8_t af);
 void gpio_write_pin(volatile Gpio *gpio, uint8_t pin, bool high);
 
 #endif // !REMIX_GPIO_H_
