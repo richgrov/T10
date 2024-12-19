@@ -27,6 +27,10 @@ void rcc_ahb1_set(uint32_t enable) {
    RCC->ahb1_enable = enable;
 }
 
+void rcc_apb1_set(uint32_t enable) {
+   RCC->apb1en = enable;
+}
+
 void rcc_apb2_set(uint32_t enable) {
    RCC->apb2en = enable;
 }
