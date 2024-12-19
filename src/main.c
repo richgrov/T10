@@ -3,39 +3,9 @@
 
 #include "config.h"
 #include "gpio.h"
+#include "rcc.h"
 
 static volatile uint32_t systick;
-
-typedef enum {
-   AHB1_CLOCK_ENABLE_GPIOA = (1UL << 0),
-} Ahb1ClockEnable;
-
-typedef enum {
-   APB2_SYSCFG_CLOCK_ENABLE = (1 << 14),
-} Apb2en;
-
-typedef struct {
-   volatile uint32_t clock_ctl;
-   volatile uint32_t config;
-   volatile uint32_t clock_config;
-   volatile uint32_t clock_interrupt;
-   volatile uint32_t ahb1_reset;
-   volatile uint32_t ahb2_reset;
-   volatile uint32_t ahb3_reset;
-   volatile uint32_t _reserved1;
-   volatile uint32_t apb1_reset;
-   volatile uint32_t apb2_reset;
-   volatile uint32_t _reserved2;
-   volatile uint32_t _reserved3;
-   volatile uint32_t ahb1_clock_enable;
-   volatile uint32_t ahb2_clock_enable;
-   volatile uint32_t ahb3_clock_enable;
-   volatile uint32_t _reserved4;
-   volatile uint32_t apb1en;
-   volatile uint32_t apb2en;
-} ResetAndClockControl;
-
-#define RCC ((volatile ResetAndClockControl *)0x40023800)
 
 typedef enum {
    SYSTICK_COUNTER_ENABLE = 1,
@@ -57,7 +27,7 @@ static void systick_init(void) {
       SYSTICK_COUNTER_ENABLE | SYSTICK_INTERRUPT_ON_ZERO | SYSTICK_USE_PROCESSOR_CLOCK;
    SysTick->reload_val = CLOCK_SPEED_1MS - 1;
    SysTick->current_val = 0;
-   RCC->apb2en |= APB2_SYSCFG_CLOCK_ENABLE;
+   rcc_apb2_set(APB2_SYSCFG_ENABLE);
 }
 
 void delay(uint32_t ticks) {
@@ -69,7 +39,7 @@ void delay(uint32_t ticks) {
 
 void main(void) {
    systick_init();
-   RCC->ahb1_clock_enable |= AHB1_CLOCK_ENABLE_GPIOA;
+   rcc_ahb1_set(AHB1_ENABLE_GPIOA);
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
 
    while (true) {
