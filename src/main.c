@@ -43,10 +43,18 @@ __attribute__((naked, noreturn)) void _reset(void) {
                 "	 cmp r0, r1\n"
                 "  blt zero_loop\n");
 
-   extern long _sdata, _edata, _sidata;
-   for (long *memory = &_sdata, *flash_data = &_sidata; memory < &_edata;) {
-      *memory++ = *flash_data++;
-   }
+   // Initialize .data
+   asm volatile("  ldr r0, =_sdata\n"
+                "  ldr r1, =_sidata\n"
+                "  ldr r2, =_edata\n"
+
+                "data_init_loop:\n"
+                "  ldrb r3, [r1]\n"
+                "  strb r3, [r0]\n"
+                "  add r0, r0, #1\n"
+                "  add r1, r1, #1\n"
+                "  cmp r0, r2\n"
+                "  blt data_init_loop\n");
 
    main();
 
