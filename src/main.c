@@ -8,8 +8,8 @@
 
 void main(void) {
    systick_init();
-   rcc_ahb1_set(AHB1_ENABLE_GPIOA);
-   rcc_apb1_set(APB1_UART2_ENABLE);
+   rcc_ahb1_enable(AHB1_ENABLE_GPIOA);
+   rcc_apb1_enable(APB1_UART2_ENABLE);
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
 
    const int alt_func = 7;
