@@ -32,14 +32,14 @@ void main(void) {
 
 __attribute__((naked, noreturn)) void _reset(void) {
    // Zero-initialize bss
-   asm volatile("	 ldr r0, =_sbss\n"
-                "	 ldr r1, =_ebss\n"
-                "	 mov r2, #0\n"
+   asm volatile("  ldr r0, =_sbss\n"
+                "  ldr r1, =_ebss\n"
+                "  mov r2, #0\n"
 
                 "zero_loop:\n"
-                "	 strb r2, [r0]\n"
-                "	 add r0, r0, #1\n"
-                "	 cmp r0, r1\n"
+                "  strb r2, [r0]\n"
+                "  add r0, r0, #1\n"
+                "  cmp r0, r1\n"
                 "  blt zero_loop\n");
 
    // Initialize .data
