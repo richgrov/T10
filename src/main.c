@@ -56,9 +56,8 @@ __attribute__((naked, noreturn)) void _reset(void) {
                 "  cmp r0, r2\n"
                 "  blt data_init_loop\n");
 
-   main();
-
-   asm volatile("loop:\n"
+   asm volatile("  bl main\n"
+                "loop:\n"
                 "  wfi\n"
                 "  b loop\n");
 }
