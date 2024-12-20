@@ -50,8 +50,9 @@ __attribute__((naked, noreturn)) void _reset(void) {
 
    main();
 
-   while (true) {
-   }
+   asm volatile("loop:\n"
+                "  wfi\n"
+                "  b loop\n");
 }
 
 extern void _estack(void);
