@@ -3,6 +3,7 @@
 #include <stdint-gcc.h>
 
 #include "config.h"
+#include "gpio.h"
 #include "rcc.h"
 
 struct Usart {
@@ -20,6 +21,8 @@ static volatile Usart *const USART_TABLE[] = {
    (volatile Usart *)0x40004C00, (volatile Usart *)0x40005000, (volatile Usart *)0x40011400,
 };
 
+#define USART2_ALT_FUNC 7
+
 typedef enum {
    USART_DATA_TRANSMIT_DATA_TRANSFERRED = (1 << 7),
 } UsartData;
@@ -33,6 +36,10 @@ typedef enum {
 void usart_init(uint8_t usart_num, uint32_t baud) {
    switch (usart_num) {
    case 2:
+      gpio_set_mode(GPIOA, 2, GPIO_MODE_ALT);
+      gpio_set_af(GPIOA, 2, USART2_ALT_FUNC);
+      gpio_set_mode(GPIOA, 3, GPIO_MODE_ALT);
+      gpio_set_af(GPIOA, 3, USART2_ALT_FUNC);
       rcc_apb1_enable(APB1_UART2_ENABLE);
       break;
    }

@@ -11,11 +11,6 @@ void main(void) {
    rcc_ahb1_enable(AHB1_ENABLE_GPIOA);
    gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
 
-   const int alt_func = 7;
-   gpio_set_mode(GPIOA, 2, GPIO_MODE_ALT);
-   gpio_set_af(GPIOA, 2, alt_func);
-   gpio_set_mode(GPIOA, 3, GPIO_MODE_ALT);
-   gpio_set_af(GPIOA, 3, alt_func);
 
    usart_init(2, 115200);
 
