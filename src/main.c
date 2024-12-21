@@ -1,7 +1,7 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
-#include "gpio.h"
+#include "adv_ctl_timer.h"
 #include "rcc.h"
 #include "systick.h"
 #include "usart.h"
@@ -9,17 +9,17 @@
 void main(void) {
    systick_init();
    rcc_ahb1_enable(AHB1_ENABLE_GPIOA);
-   gpio_set_mode(GPIOA, 5, GPIO_MODE_OUTPUT);
 
+   adv_ctl_timer_init(1);
+   adv_ctl_timer_pwm_init(1, 2, 1000, 500);
+   adv_ctl_timer_pwm_start(1);
 
    usart_init(2, 115200);
 
    while (true) {
-      gpio_write_pin(GPIOA, 5, true);
       usart_write(2, (uint8_t *)"LED on\r\n", 8);
       systick_delay(1000);
 
-      gpio_write_pin(GPIOA, 5, false);
       usart_write(2, (uint8_t *)"LED off\r\n", 9);
       systick_delay(1000);
    }

@@ -22,6 +22,8 @@ typedef enum {
 } Apb1Enable;
 
 typedef enum {
+   APB2_TIM1_ENABLE = (1 << 0),
+   APB2_TIM8_ENABLE = (1 << 1),
    APB2_SYSCFG_ENABLE = (1 << 14),
 } Apb2Enable;
 
