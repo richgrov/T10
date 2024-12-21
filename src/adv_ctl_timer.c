@@ -32,6 +32,7 @@ typedef struct {
 #define TIM8 ((volatile AdvancedControlTimer *)0x40010400)
 
 #define TIM1_CH1_ALT_FUNC 1
+#define TIM8_CH1_ALT_FUNC 3
 
 typedef enum {
    C1_COUNTER_ENABLE = (1 << 0),
@@ -57,25 +58,17 @@ typedef enum {
 } BreadDeadTime;
 
 void adv_ctl_timer_init(uint8_t timer_num) {
-   volatile AdvancedControlTimer *timer;
-
    switch (timer_num) {
    case 1:
       rcc_apb2_enable(APB2_TIM1_ENABLE);
-      timer = TIM1;
       break;
    case 8:
-      rcc_apb2_enable(APB2_TIM1_ENABLE);
-      timer = TIM8;
+      rcc_apb2_enable(APB2_TIM8_ENABLE);
       break;
    }
-
-   timer->break_dead_time |= BDT_MAIN_OUTPUT_ENABLE;
 }
 
-void adv_ctl_timer_pwm_init(
-   uint8_t timer_num, uint16_t prescaler, uint16_t frequency, uint16_t duty_cycle
-) {
+void adv_ctl_timer_pwm_init(uint8_t timer_num) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -85,7 +78,29 @@ void adv_ctl_timer_pwm_init(
       timer = TIM1;
       break;
    case 8:
-      // TODO: TIM8
+      gpio_set_mode(GPIOC, 6, GPIO_MODE_ALT);
+      gpio_set_af(GPIOC, 6, TIM8_CH1_ALT_FUNC);
+      timer = TIM8;
+      break;
+   }
+
+   timer->capture_compare_mode_1 &= ~CCM1_OUT_COMPARE_1_MODE_MASK;
+   timer->capture_compare_mode_1 |=
+      CCM1_OUT_COMPARE_1_PRELOAD_ENABLE | CCM1_OUT_COMPARE_1_MODE_PWM_1;
+   timer->capture_compare_enable |= CCE_OUTPUT_1_ENABLE;
+   timer->break_dead_time |= BDT_MAIN_OUTPUT_ENABLE;
+}
+
+void adv_ctl_timer_pwm_config(
+   uint8_t timer_num, uint16_t prescaler, uint16_t frequency, uint16_t duty_cycle
+) {
+   volatile AdvancedControlTimer *timer;
+
+   switch (timer_num) {
+   case 1:
+      timer = TIM1;
+      break;
+   case 8:
       timer = TIM8;
       break;
    }
@@ -93,12 +108,6 @@ void adv_ctl_timer_pwm_init(
    timer->prescaler = prescaler - 1;
    timer->auto_reload = frequency - 1;
    timer->capture_compare_1 = duty_cycle;
-
-   timer->capture_compare_mode_1 |= CCM1_OUT_COMPARE_1_PRELOAD_ENABLE;
-   timer->capture_compare_mode_1 &= ~CCM1_OUT_COMPARE_1_MODE_MASK;
-   timer->capture_compare_mode_1 |= CCM1_OUT_COMPARE_1_MODE_PWM_1;
-
-   timer->capture_compare_enable |= CCE_OUTPUT_1_ENABLE;
 }
 
 void adv_ctl_timer_pwm_start(uint8_t timer_num) {

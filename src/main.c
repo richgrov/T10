@@ -9,19 +9,39 @@
 void main(void) {
    systick_init();
    rcc_ahb1_enable(AHB1_ENABLE_GPIOA);
+   rcc_ahb1_enable(AHB1_ENABLE_GPIOC);
+
+   uint16_t brightness = 0;
+   uint16_t direction = 1;
+   uint8_t timer = 1;
 
    adv_ctl_timer_init(1);
-   adv_ctl_timer_pwm_init(1, 2, 1000, 500);
+   adv_ctl_timer_pwm_init(1);
+   adv_ctl_timer_pwm_config(1, 1, 500, brightness);
    adv_ctl_timer_pwm_start(1);
+
+   adv_ctl_timer_init(8);
+   adv_ctl_timer_pwm_init(8);
+   adv_ctl_timer_pwm_config(8, 1, 500, brightness);
+   adv_ctl_timer_pwm_start(8);
 
    usart_init(2, 115200);
 
    while (true) {
-      usart_write(2, (uint8_t *)"LED on\r\n", 8);
-      systick_delay(1000);
+      brightness += direction;
+      if (brightness >= 500) {
+         direction = -1;
+      } else if (brightness == 0) {
+         direction = 1;
+         if (timer == 1) {
+            timer = 8;
+         } else if (timer == 8) {
+            timer = 1;
+         }
+      }
 
-      usart_write(2, (uint8_t *)"LED off\r\n", 9);
-      systick_delay(1000);
+      adv_ctl_timer_pwm_config(timer, 1, 500, brightness);
+      systick_delay(1);
    }
 }
 
