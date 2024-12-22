@@ -5,7 +5,7 @@ firmware.elf: $(OBJECTS)
 	arm-none-eabi-gcc -T src/link.ld -nostdlib $(OBJECTS) -o build/firmware.elf
 
 build/%.o: src/%.c | build/
-	arm-none-eabi-gcc -mcpu=cortex-m4 $< -c -o $@ -Wall -Wextra -Werror -pedantic -Wno-main
+	arm-none-eabi-gcc -mcpu=cortex-m4 $< -c -o $@ -Wall -Wextra -Werror -pedantic -Wno-main -MMD -MT $@ -MF build/$*.d -MP
 
 flash: build/firmware.bin
 	st-flash --reset write build/firmware.bin 0x8000000
@@ -18,3 +18,5 @@ build/:
 
 clean:
 	rm -rf build/
+
+include $(wildcard $(SOURCES:%.c=build/%.d))
