@@ -4,8 +4,8 @@ OBJECTS = $(SOURCES:%.c=build/%.o)
 firmware.elf: $(OBJECTS)
 	arm-none-eabi-gcc -T src/link.ld -nostdlib $(OBJECTS) -o build/firmware.elf
 
-build/%.o: src/%.c | build/
 	arm-none-eabi-gcc -mcpu=cortex-m4 $< -c -o $@ -Wall -Wextra -Werror -pedantic -Wno-main -MMD -MT $@ -MF build/$*.d -MP
+build/%.o: src/%.c build/%.d | build/
 
 flash: build/firmware.bin
 	st-flash --reset write build/firmware.bin 0x8000000
@@ -19,4 +19,8 @@ build/:
 clean:
 	rm -rf build/
 
-include $(wildcard $(SOURCES:%.c=build/%.d))
+DEPENDENCIES := $(SOURCES:%.c=build/%.d)
+$(DEPENDENCIES):
+	@mkdir -p $(@D)
+
+include $(wildcard $(DEPENDENCIES))
