@@ -1,5 +1,5 @@
-#ifndef REMIX_GPIO_H_
-#define REMIX_GPIO_H_
+#ifndef REMIX_FIRMWARE_GPIO_H_
+#define REMIX_FIRMWARE_GPIO_H_
 
 #include <stdbool.h>
 #include <stdint-gcc.h>
@@ -22,4 +22,4 @@ void gpio_set_mode(volatile Gpio *gpio, uint8_t pin, GpioPortMode mode);
 void gpio_set_af(volatile Gpio *gpio, uint8_t pin, uint8_t af);
 void gpio_write_pin(volatile Gpio *gpio, uint8_t pin, bool high);
 
-#endif // !REMIX_GPIO_H_
+#endif // !REMIX_FIRMWARE_GPIO_H_

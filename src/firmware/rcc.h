@@ -1,5 +1,5 @@
-#ifndef REMIX_RCC_H_
-#define REMIX_RCC_H_
+#ifndef REMIX_FIRMWARE_RCC_H_
+#define REMIX_FIRMWARE_RCC_H_
 
 #include <stdint-gcc.h>
 
@@ -31,4 +31,4 @@ void rcc_ahb1_enable(uint32_t enable);
 void rcc_apb1_enable(uint32_t enable);
 void rcc_apb2_enable(uint32_t enable);
 
-#endif // !REMIX_RCC_H_
+#endif // !REMIX_FIRMWARE_RCC_H_

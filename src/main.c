@@ -1,10 +1,10 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
-#include "adv_ctl_timer.h"
-#include "rcc.h"
-#include "systick.h"
-#include "usart.h"
+#include "firmware/adv_ctl_timer.h"
+#include "firmware/rcc.h"
+#include "firmware/systick.h"
+#include "firmware/usart.h"
 
 void main(void) {
    systick_init();

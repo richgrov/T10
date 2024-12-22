@@ -1,5 +1,5 @@
-#ifndef REMIX_NVIC_H_
-#define REMIX_NVIC_H_
+#ifndef REMIX_FIRMWARE_NVIC_H_
+#define REMIX_FIRMWARE_NVIC_H_
 
 #include <stdint-gcc.h>
 
@@ -13,4 +13,4 @@ static inline void nvic_enable(uint8_t irq) {
    NVIC_ISER[irq / 32] |= (1 << (irq % 32));
 }
 
-#endif // !REMIX_NVIC_H_
+#endif // !REMIX_FIRMWARE_NVIC_H_
