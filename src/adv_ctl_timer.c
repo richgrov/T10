@@ -6,26 +6,26 @@
 #include "rcc.h"
 
 typedef struct {
-   uint32_t control_1;
-   uint32_t control_2;
-   uint32_t slave_mode_control;
-   uint32_t interrupt_enable;
-   uint32_t status;
-   uint32_t event_generation;
-   uint32_t capture_compare_mode_1;
-   uint32_t capture_compare_mode_2;
-   uint32_t capture_compare_enable;
-   uint32_t counter;
-   uint32_t prescaler;
-   uint32_t auto_reload;
-   uint32_t repitition_counter;
-   uint32_t capture_compare_1;
-   uint32_t capture_compare_2;
-   uint32_t capture_compare_3;
-   uint32_t capture_compare_4;
-   uint32_t break_dead_time;
-   uint32_t dma_control;
-   uint32_t dma_addr_full_transfer;
+   volatile uint32_t control_1;
+   volatile uint32_t control_2;
+   volatile uint32_t slave_mode_control;
+   volatile uint32_t interrupt_enable;
+   volatile uint32_t status;
+   volatile uint32_t event_generation;
+   volatile uint32_t capture_compare_mode_1;
+   volatile uint32_t capture_compare_mode_2;
+   volatile uint32_t capture_compare_enable;
+   volatile uint32_t counter;
+   volatile uint32_t prescaler;
+   volatile uint32_t auto_reload;
+   volatile uint32_t repitition_counter;
+   volatile uint32_t capture_compare_1;
+   volatile uint32_t capture_compare_2;
+   volatile uint32_t capture_compare_3;
+   volatile uint32_t capture_compare_4;
+   volatile uint32_t break_dead_time;
+   volatile uint32_t dma_control;
+   volatile uint32_t dma_addr_full_transfer;
 } AdvancedControlTimer;
 
 #define TIM1 ((volatile AdvancedControlTimer *)0x40010000)
