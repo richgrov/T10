@@ -40,6 +40,10 @@ typedef enum {
 } Control1;
 
 typedef enum {
+   IE_UPDATE,
+} InterruptEnable;
+
+typedef enum {
    EG_UPDATE = (1 << 0),
 } EventGeneration;
 
@@ -125,4 +129,28 @@ void adv_ctl_timer_pwm_start(uint8_t timer_num) {
    timer->event_generation |= EG_UPDATE;
    timer->control_1 |= C1_PRELOAD_AUTO_RELOAD;
    timer->control_1 |= C1_COUNTER_ENABLE;
+}
+
+void adv_ctl_timer_enable_update_isr(uint8_t timer_num) {
+   volatile AdvancedControlTimer *timer;
+
+   switch (timer_num) {
+   case 1:
+      timer = TIM1;
+      break;
+   case 8:
+      timer = TIM8;
+      break;
+   }
+
+   timer->interrupt_enable |= 3;
+   timer->status = 0;
+}
+
+bool adv_ctl_timer_is_tim1_update_now() {
+   if ((TIM1->status & 1) != 0) {
+      TIM1->status &= ~1;
+      return true;
+   }
+   return false;
 }
