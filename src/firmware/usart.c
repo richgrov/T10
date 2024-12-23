@@ -51,13 +51,35 @@ void usart_init(uint8_t usart_num, uint32_t baud) {
                      USART_CONTROL1_USART_ENABLE;
 }
 
-void usart_write(uint8_t usart_num, const uint8_t *buf, uint32_t len) {
+void usart_write(uint8_t usart_num, const uint8_t b) {
    volatile Usart *usart = USART_TABLE[usart_num - 1];
-   for (uint32_t i = 0; i < len; ++i) {
-      usart->data = buf[i];
+   usart->data = b;
+   while ((usart->status & USART_DATA_TRANSMIT_DATA_TRANSFERRED) == 0) {
+      asm("nop");
+   }
+}
 
-      while ((usart->status & USART_DATA_TRANSMIT_DATA_TRANSFERRED) == 0) {
-         asm("nop");
+void usart_write_u32(uint8_t usart_num, uint32_t num) {
+   uint32_t subtract = 1000000000;
+   bool digit_printed = false;
+
+   while (subtract > 0) {
+      char digit = 0;
+      while (num >= subtract) {
+         num -= subtract;
+         ++digit;
       }
+      subtract /= 10;
+
+      if (digit_printed || digit != 0 || subtract == 1) {
+         usart_write(usart_num, '0' + digit);
+         digit_printed = true;
+      }
+   }
+}
+
+void usart_write_str(uint8_t usart_num, const char *str) {
+   for (const char *c = str; *c != 0; ++c) {
+      usart_write(usart_num, (uint8_t)*c);
    }
 }
