@@ -3,11 +3,12 @@ SOURCES := firmware/adv_ctl_timer.c \
 			  firmware/rcc.c \
 			  firmware/systick.c \
 			  firmware/usart.c \
-			  main.c
+			  main.c \
+			  stepper.c
 
 OBJECTS = $(SOURCES:%.c=build/%.o)
 
-firmware.elf: $(OBJECTS)
+build/firmware.elf: $(OBJECTS)
 	arm-none-eabi-gcc -T src/link.ld -nostdlib $(OBJECTS) -o build/firmware.elf
 
 build/%.o: src/%.c build/%.d | build/
