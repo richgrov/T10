@@ -6,11 +6,11 @@
 
 void adv_ctl_timer_init(uint8_t timer_num);
 
-void adv_ctl_timer_pwm_init(uint8_t timer_num);
+void adv_ctl_timer_pwm_init(uint8_t timer_num, uint8_t channel);
 
-void adv_ctl_timer_pwm_config(
-   uint8_t timer_num, uint16_t prescaler, uint16_t frequency, uint16_t duty_cycle
-);
+void adv_ctl_timer_pwm_config(uint8_t timer_num, uint16_t prescaler, uint16_t frequency);
+
+void adv_ctl_timer_pwm_duty_cycle(uint8_t timer_num, uint16_t channel, uint16_t duty_cycle);
 
 void adv_ctl_timer_pwm_start(uint8_t timer_num);
 

@@ -16,13 +16,14 @@ void stepper_init(
    stepper->steps_per_revolution = steps_per_revolution;
 
    adv_ctl_timer_init(timer);
-   adv_ctl_timer_pwm_init(timer);
+   adv_ctl_timer_pwm_init(timer, 1);
 }
 
 void stepper_set_speed(Stepper *stepper, uint32_t rpm) {
    uint32_t ticks_per_sec = CYCLE_WIDTH * stepper->steps_per_revolution * rpm;
    uint32_t prescaler = 60 * CLOCK_SPEED / ticks_per_sec;
-   adv_ctl_timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH, DUTY_CYCLE);
+   adv_ctl_timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
+   adv_ctl_timer_pwm_duty_cycle(1, 1, DUTY_CYCLE);
 }
 
 void stepper_set_enabled(Stepper *stepper, bool enable) {

@@ -12,17 +12,13 @@ typedef struct {
    volatile uint32_t interrupt_enable;
    volatile uint32_t status;
    volatile uint32_t event_generation;
-   volatile uint32_t capture_compare_mode_1;
-   volatile uint32_t capture_compare_mode_2;
+   volatile uint32_t capture_compare_mode[2];
    volatile uint32_t capture_compare_enable;
    volatile uint32_t counter;
    volatile uint32_t prescaler;
    volatile uint32_t auto_reload;
    volatile uint32_t repitition_counter;
-   volatile uint32_t capture_compare_1;
-   volatile uint32_t capture_compare_2;
-   volatile uint32_t capture_compare_3;
-   volatile uint32_t capture_compare_4;
+   volatile uint32_t capture_compare[4];
    volatile uint32_t break_dead_time;
    volatile uint32_t dma_control;
    volatile uint32_t dma_addr_full_transfer;
@@ -48,14 +44,10 @@ typedef enum {
 } EventGeneration;
 
 typedef enum {
-   CCM1_OUT_COMPARE_1_PRELOAD_ENABLE = (1 << 3),
-   CCM1_OUT_COMPARE_1_MODE_PWM_1 = (6 << 4),
-   CCM1_OUT_COMPARE_1_MODE_MASK = (7 << 4),
+   CCM_OUT_PRELOAD_ENABLE = (1 << 3),
+   CCM_OUT_MODE_PWM_1 = (6 << 4),
+   CCM_OUT_MODE_MASK = (7 << 4),
 } CaptureCompareMode1;
-
-typedef enum {
-   CCE_OUTPUT_1_ENABLE = (1 << 0),
-} CaptureCompareEnable;
 
 typedef enum {
    BDT_MAIN_OUTPUT_ENABLE = (1 << 15),
@@ -72,13 +64,21 @@ void adv_ctl_timer_init(uint8_t timer_num) {
    }
 }
 
-void adv_ctl_timer_pwm_init(uint8_t timer_num) {
+void adv_ctl_timer_pwm_init(uint8_t timer_num, uint8_t channel) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
    case 1:
-      gpio_set_mode(GPIOA, 8, GPIO_MODE_ALT);
-      gpio_set_af(GPIOA, 8, TIM1_CH1_ALT_FUNC);
+      switch (channel) {
+      case 1:
+         gpio_set_mode(GPIOA, 8, GPIO_MODE_ALT);
+         gpio_set_af(GPIOA, 8, TIM1_CH1_ALT_FUNC);
+         break;
+      case 2:
+         gpio_set_mode(GPIOA, 9, GPIO_MODE_ALT);
+         gpio_set_af(GPIOA, 9, TIM1_CH1_ALT_FUNC);
+         break;
+      }
       timer = TIM1;
       break;
    case 8:
@@ -88,16 +88,16 @@ void adv_ctl_timer_pwm_init(uint8_t timer_num) {
       break;
    }
 
-   timer->capture_compare_mode_1 &= ~CCM1_OUT_COMPARE_1_MODE_MASK;
-   timer->capture_compare_mode_1 |=
-      CCM1_OUT_COMPARE_1_PRELOAD_ENABLE | CCM1_OUT_COMPARE_1_MODE_PWM_1;
-   timer->capture_compare_enable |= CCE_OUTPUT_1_ENABLE;
+   int reg_idx = (channel - 1) / 2;
+   int reg_shift = (channel - 1) % 2 * 8;
+   timer->capture_compare_mode[reg_idx] &= ~(CCM_OUT_MODE_MASK << reg_shift);
+   timer->capture_compare_mode[reg_idx] |=
+      (CCM_OUT_PRELOAD_ENABLE << reg_shift) | (CCM_OUT_MODE_PWM_1 << reg_shift);
+   timer->capture_compare_enable |= (1 << 4 * (channel - 1));
    timer->break_dead_time |= BDT_MAIN_OUTPUT_ENABLE;
 }
 
-void adv_ctl_timer_pwm_config(
-   uint8_t timer_num, uint16_t prescaler, uint16_t frequency, uint16_t duty_cycle
-) {
+void adv_ctl_timer_pwm_config(uint8_t timer_num, uint16_t prescaler, uint16_t frequency) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -111,7 +111,21 @@ void adv_ctl_timer_pwm_config(
 
    timer->prescaler = prescaler - 1;
    timer->auto_reload = frequency - 1;
-   timer->capture_compare_1 = duty_cycle;
+}
+
+void adv_ctl_timer_pwm_duty_cycle(uint8_t timer_num, uint16_t channel, uint16_t duty_cycle) {
+   volatile AdvancedControlTimer *timer;
+
+   switch (timer_num) {
+   case 1:
+      timer = TIM1;
+      break;
+   case 8:
+      timer = TIM8;
+      break;
+   }
+
+   timer->capture_compare[channel - 1] = duty_cycle;
 }
 
 void adv_ctl_timer_pwm_start(uint8_t timer_num) {
