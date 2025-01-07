@@ -1,4 +1,4 @@
-#include "adv_ctl_timer.h"
+#include "timer.h"
 
 #include <stdint-gcc.h>
 
@@ -26,6 +26,7 @@ typedef struct {
 
 #define TIM1 ((volatile AdvancedControlTimer *)0x40010000)
 #define TIM8 ((volatile AdvancedControlTimer *)0x40010400)
+#define GET_TIMER(n) (n == 1 ? TIM1 : n == 8 ? TIM8 : NULL)
 
 #define TIM1_CH1_ALT_FUNC 1
 #define TIM8_CH1_ALT_FUNC 3
@@ -53,7 +54,7 @@ typedef enum {
    BDT_MAIN_OUTPUT_ENABLE = (1 << 15),
 } BreakDeadTime;
 
-void adv_ctl_timer_init(uint8_t timer_num) {
+void timer_init(uint8_t timer_num) {
    switch (timer_num) {
    case 1:
       rcc_apb2_enable(APB2_TIM1_ENABLE);
@@ -64,7 +65,7 @@ void adv_ctl_timer_init(uint8_t timer_num) {
    }
 }
 
-void adv_ctl_timer_pwm_init(uint8_t timer_num, uint8_t channel) {
+void timer_pwm_init(uint8_t timer_num, uint8_t channel) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -97,7 +98,7 @@ void adv_ctl_timer_pwm_init(uint8_t timer_num, uint8_t channel) {
    timer->break_dead_time |= BDT_MAIN_OUTPUT_ENABLE;
 }
 
-void adv_ctl_timer_pwm_config(uint8_t timer_num, uint16_t prescaler, uint16_t frequency) {
+void timer_pwm_config(uint8_t timer_num, uint16_t prescaler, uint16_t frequency) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -113,7 +114,7 @@ void adv_ctl_timer_pwm_config(uint8_t timer_num, uint16_t prescaler, uint16_t fr
    timer->auto_reload = frequency - 1;
 }
 
-void adv_ctl_timer_pwm_duty_cycle(uint8_t timer_num, uint16_t channel, uint16_t duty_cycle) {
+void timer_pwm_duty_cycle(uint8_t timer_num, uint16_t channel, uint16_t duty_cycle) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -128,7 +129,7 @@ void adv_ctl_timer_pwm_duty_cycle(uint8_t timer_num, uint16_t channel, uint16_t 
    timer->capture_compare[channel - 1] = duty_cycle;
 }
 
-void adv_ctl_timer_pwm_start(uint8_t timer_num) {
+void timer_pwm_start(uint8_t timer_num) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -145,7 +146,7 @@ void adv_ctl_timer_pwm_start(uint8_t timer_num) {
    timer->control_1 |= C1_COUNTER_ENABLE;
 }
 
-void adv_ctl_timer_enable_update_isr(uint8_t timer_num) {
+void timer_enable_update_isr(uint8_t timer_num) {
    volatile AdvancedControlTimer *timer;
 
    switch (timer_num) {
@@ -161,7 +162,7 @@ void adv_ctl_timer_enable_update_isr(uint8_t timer_num) {
    timer->status = 0;
 }
 
-bool adv_ctl_timer_is_tim1_update_now() {
+bool timer_is_tim1_update_now() {
    if ((TIM1->status & 1) != 0) {
       TIM1->status &= ~1;
       return true;

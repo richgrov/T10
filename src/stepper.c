@@ -1,7 +1,7 @@
 #include "stepper.h"
 
 #include "config.h"
-#include "firmware/adv_ctl_timer.h"
+#include "firmware/timer.h"
 
 #define CYCLE_WIDTH 50
 #define DUTY_CYCLE 25
@@ -15,15 +15,15 @@ void stepper_init(
    stepper->direction_pin = direction_pin;
    stepper->steps_per_revolution = steps_per_revolution;
 
-   adv_ctl_timer_init(timer);
-   adv_ctl_timer_pwm_init(timer, 1);
+   timer_init(timer);
+   timer_pwm_init(timer, 1);
 }
 
 void stepper_set_speed(Stepper *stepper, uint32_t rpm) {
    uint32_t ticks_per_sec = CYCLE_WIDTH * stepper->steps_per_revolution * rpm;
    uint32_t prescaler = 60 * CLOCK_SPEED / ticks_per_sec;
-   adv_ctl_timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
-   adv_ctl_timer_pwm_duty_cycle(1, 1, DUTY_CYCLE);
+   timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
+   timer_pwm_duty_cycle(1, 1, DUTY_CYCLE);
 }
 
 void stepper_set_enabled(Stepper *stepper, bool enable) {
@@ -31,5 +31,5 @@ void stepper_set_enabled(Stepper *stepper, bool enable) {
       return; // todo
    }
 
-   adv_ctl_timer_pwm_start(stepper->timer);
+   timer_pwm_start(stepper->timer);
 }

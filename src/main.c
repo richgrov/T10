@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
-#include "firmware/adv_ctl_timer.h"
 #include "firmware/rcc.h"
 #include "firmware/systick.h"
+#include "firmware/timer.h"
 #include "firmware/usart.h"
 #include "stepper.h"
 
