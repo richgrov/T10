@@ -47,11 +47,11 @@ typedef enum {
    CCM_OUT_PRELOAD_ENABLE = (1 << 3),
    CCM_OUT_MODE_PWM_1 = (6 << 4),
    CCM_OUT_MODE_MASK = (7 << 4),
-} CaptureCompareMode1;
+} CaptureCompareMode;
 
 typedef enum {
    BDT_MAIN_OUTPUT_ENABLE = (1 << 15),
-} BreadDeadTime;
+} BreakDeadTime;
 
 void adv_ctl_timer_init(uint8_t timer_num) {
    switch (timer_num) {
