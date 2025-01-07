@@ -91,8 +91,8 @@ void adv_ctl_timer_pwm_init(uint8_t timer_num, uint8_t channel) {
    int reg_idx = (channel - 1) / 2;
    int reg_shift = (channel - 1) % 2 * 8;
    timer->capture_compare_mode[reg_idx] &= ~(CCM_OUT_MODE_MASK << reg_shift);
-   timer->capture_compare_mode[reg_idx] |=
-      (CCM_OUT_PRELOAD_ENABLE << reg_shift) | (CCM_OUT_MODE_PWM_1 << reg_shift);
+   timer->capture_compare_mode[reg_idx] |= (CCM_OUT_PRELOAD_ENABLE | CCM_OUT_MODE_PWM_1)
+                                           << reg_shift;
    timer->capture_compare_enable |= (1 << 4 * (channel - 1));
    timer->break_dead_time |= BDT_MAIN_OUTPUT_ENABLE;
 }
