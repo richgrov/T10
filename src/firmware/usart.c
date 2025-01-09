@@ -69,12 +69,13 @@ void usart_write_u32(uint8_t usart_num, uint32_t num) {
          num -= subtract;
          ++digit;
       }
-      subtract /= 10;
 
       if (digit_printed || digit != 0 || subtract == 1) {
          usart_write(usart_num, '0' + digit);
          digit_printed = true;
       }
+
+      subtract /= 10;
    }
 }
 
