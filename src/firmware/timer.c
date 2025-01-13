@@ -10,9 +10,9 @@ typedef struct {
    volatile uint32_t CR1;
    // control register 2
    volatile uint32_t CR2;
-   // control register 2
-   volatile uint32_t SMCR;
    // slave mode control register
+   volatile uint32_t SMCR;
+   // DMA/interrupt enable register
    volatile uint32_t DIER;
    // status register
    volatile uint32_t SR;
