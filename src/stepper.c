@@ -3,8 +3,9 @@
 #include "config.h"
 #include "firmware/timer.h"
 
-#define CYCLE_WIDTH 50
-#define DUTY_CYCLE 25
+// Set to powers of 2 to improve integer division performance
+#define CYCLE_WIDTH 1024
+#define DUTY_CYCLE 512
 
 void stepper_init(
    Stepper *stepper, uint16_t steps_per_revolution, uint8_t timer, volatile Gpio *direction_gpio,
