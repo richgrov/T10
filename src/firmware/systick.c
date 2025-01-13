@@ -40,3 +40,7 @@ void systick_delay(uint32_t ms) {
       asm("wfi");
    }
 }
+
+uint32_t systick_time() {
+   return systick;
+}
