@@ -37,6 +37,6 @@ void systick_handler(void) {
 void systick_delay(uint32_t ms) {
    uint32_t until = systick + ms;
    while (systick < until) {
-      asm("nop");
+      asm("wfi");
    }
 }
