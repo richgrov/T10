@@ -1,7 +1,7 @@
-SOURCES := firmware/adv_ctl_timer.c \
-			  firmware/gpio.c \
+SOURCES := firmware/gpio.c \
 			  firmware/rcc.c \
 			  firmware/systick.c \
+			  firmware/timer.c \
 			  firmware/usart.c \
 			  main.c \
 			  stepper.c
