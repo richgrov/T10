@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint-gcc.h>
 
 #include "firmware/nvic.h"
@@ -7,6 +8,14 @@
 #include "firmware/timer.h"
 #include "firmware/usart.h"
 #include "stepper.h"
+
+void *memset(void *start, int val, size_t size) {
+   uint8_t *addr = (uint8_t *)start;
+   for (size_t i = 0; i < size; ++i) {
+      addr[i] = val;
+   }
+   return addr + size;
+}
 
 void main(void) {
    systick_init();
