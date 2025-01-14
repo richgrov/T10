@@ -1,6 +1,10 @@
 #include "stepper.h"
 
+#include <stdint-gcc.h>
+
 #include "config.h"
+#include "firmware/nvic.h"
+#include "firmware/systick.h"
 #include "firmware/timer.h"
 
 // Set to powers of 2 to improve integer division performance
@@ -34,12 +38,21 @@ void stepper_init(StepperController *stepper) {
    steppers[stepper->timer - 1] = stepper;
 }
 
-uint32_t stepper_speed(StepperController *stepper, uint32_t now) {
+uint16_t stepper_speed(StepperController *stepper, uint32_t now) {
    (void)stepper;
    (void)now;
-   return 0;
+   return 3;
 }
 
 void stepper_update(StepperController *stepper) {
-   (void)stepper;
+   uint32_t now = systick_time();
+   uint16_t steps_per_sec = stepper_speed(stepper, now);
+   uint16_t prescaler = CLOCK_SPEED / CYCLE_WIDTH / steps_per_sec / stepper->steps_per_revolution;
+
+   timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
+
+   if (!stepper->enabled) {
+      stepper->enabled = true;
+      timer_pwm_start(stepper->timer);
+   }
 }

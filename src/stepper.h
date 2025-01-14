@@ -11,6 +11,7 @@ typedef struct {
    uint16_t steps_per_revolution;
    int16_t position;
    int16_t target;
+   bool enabled;
 } StepperController;
 
 // Before calling this, ensure the following fields are initialized:
