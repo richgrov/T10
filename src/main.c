@@ -2,10 +2,10 @@
 #include <stddef.h>
 #include <stdint-gcc.h>
 
+#include "firmware/gpio.h"
 #include "firmware/nvic.h"
 #include "firmware/rcc.h"
 #include "firmware/systick.h"
-#include "firmware/timer.h"
 #include "firmware/usart.h"
 #include "stepper.h"
 
@@ -26,8 +26,9 @@ void main(void) {
       .timer = 1,
       .direction_gpio = GPIOA,
       .direction_pin = 5,
+      .max_rpm = 30,
       .steps_per_revolution = 200 * 4,
-      .target = 60,
+      .target = 100 * 4,
    };
    stepper_init(&stepper);
 

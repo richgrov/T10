@@ -9,6 +9,7 @@ typedef struct {
    volatile Gpio *direction_gpio;
    uint8_t direction_pin;
    uint16_t steps_per_revolution;
+   uint16_t max_rpm;
    int16_t position;
    int16_t target;
    bool enabled;
