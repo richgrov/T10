@@ -161,6 +161,21 @@ void timer_pwm_start(uint8_t timer_num) {
    timer->CR1 |= C1_COUNTER_ENABLE;
 }
 
+void timer_pwm_stop(uint8_t timer_num) {
+   volatile AdvancedControlTimer *timer;
+
+   switch (timer_num) {
+   case 1:
+      timer = TIM1;
+      break;
+   case 8:
+      timer = TIM8;
+      break;
+   }
+
+   timer->CR1 &= ~C1_COUNTER_ENABLE;
+}
+
 void timer_enable_update_isr(uint8_t timer_num) {
    volatile AdvancedControlTimer *timer;
 
