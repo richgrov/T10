@@ -26,7 +26,7 @@ void main(void) {
       .timer = 1,
       .direction_gpio = GPIOA,
       .direction_pin = 5,
-      .steps_per_revolution = 200,
+      .steps_per_revolution = 200 * 4,
       .target = 60,
    };
    stepper_init(&stepper);
