@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdint-gcc.h>
 
+#include "firmware/nvic.h"
 #include "firmware/rcc.h"
 #include "firmware/systick.h"
 #include "firmware/timer.h"
@@ -12,15 +13,19 @@ void main(void) {
    rcc_ahb1_enable(AHB1_ENABLE_GPIOA);
    rcc_ahb1_enable(AHB1_ENABLE_GPIOC);
 
-   Stepper stepper;
-   stepper_init(&stepper, 200 * 4, 1, GPIOA, 9);
-   stepper_set_speed(&stepper, 60);
-   stepper_set_enabled(&stepper, true);
+   StepperController stepper = {
+      .timer = 1,
+      .direction_gpio = GPIOA,
+      .direction_pin = 5,
+      .steps_per_revolution = 200,
+      .target = 60,
+   };
+   stepper_init(&stepper);
 
    usart_init(2, 115200);
 
    while (true) {
-      asm("wfi");
+      stepper_update(&stepper);
    }
 }
 
@@ -65,4 +70,5 @@ __attribute__((section(".vectors"))) void (*const vector_table[16 + 97])(void) =
    _estack,
    _reset,
    [15] = systick_handler,
+   [16 + ISR_TIM1_UP_TIM10] = stepper_tim1_update_isr,
 };

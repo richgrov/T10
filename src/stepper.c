@@ -7,30 +7,39 @@
 #define CYCLE_WIDTH 1024
 #define DUTY_CYCLE 512
 
-void stepper_init(
-   Stepper *stepper, uint16_t steps_per_revolution, uint8_t timer, volatile Gpio *direction_gpio,
-   uint8_t direction_pin
-) {
-   stepper->timer = timer;
-   stepper->direction_gpio = direction_gpio;
-   stepper->direction_pin = direction_pin;
-   stepper->steps_per_revolution = steps_per_revolution;
+StepperController *steppers[4];
 
-   timer_init(timer);
-   timer_pwm_init(timer, 1);
+void stepper_update_isr(int timer_num) {
+   StepperController *stepper = steppers[timer_num - 1];
+   ++stepper->position;
 }
 
-void stepper_set_speed(Stepper *stepper, uint32_t rpm) {
-   uint32_t ticks_per_sec = CYCLE_WIDTH * stepper->steps_per_revolution * rpm;
-   uint32_t prescaler = 60 * CLOCK_SPEED / ticks_per_sec;
-   timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
-   timer_pwm_duty_cycle(1, 1, DUTY_CYCLE);
+void stepper_tim1_update_isr(void) {
+   if (timer_is_tim1_update_now()) {
+      stepper_update_isr(1);
+   }
 }
 
-void stepper_set_enabled(Stepper *stepper, bool enable) {
-   if (!enable) {
-      return; // todo
+void stepper_init(StepperController *stepper) {
+   switch (stepper->timer) {
+   case 1:
+      nvic_enable(ISR_TIM1_UP_TIM10);
+      break;
    }
 
-   timer_pwm_start(stepper->timer);
+   timer_init(stepper->timer);
+   timer_pwm_init(stepper->timer, 1);
+   timer_pwm_duty_cycle(stepper->timer, 1, DUTY_CYCLE);
+   timer_enable_update_isr(stepper->timer);
+   steppers[stepper->timer - 1] = stepper;
+}
+
+uint32_t stepper_speed(StepperController *stepper, uint32_t now) {
+   (void)stepper;
+   (void)now;
+   return 0;
+}
+
+void stepper_update(StepperController *stepper) {
+   (void)stepper;
 }
