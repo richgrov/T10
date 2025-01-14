@@ -38,16 +38,16 @@ void stepper_init(StepperController *stepper) {
    steppers[stepper->timer - 1] = stepper;
 }
 
-uint16_t stepper_speed(StepperController *stepper, uint32_t now) {
+uint16_t stepper_rpm(StepperController *stepper, uint32_t now) {
    (void)stepper;
    (void)now;
-   return 3;
+   return 60;
 }
 
 void stepper_update(StepperController *stepper) {
    uint32_t now = systick_time();
-   uint16_t steps_per_sec = stepper_speed(stepper, now);
-   uint16_t prescaler = CLOCK_SPEED / CYCLE_WIDTH / steps_per_sec / stepper->steps_per_revolution;
+   uint32_t ticks_per_min = CYCLE_WIDTH * stepper->steps_per_revolution * stepper_rpm(stepper, now);
+   uint16_t prescaler = 60 * CLOCK_SPEED / ticks_per_min;
 
    timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
 
