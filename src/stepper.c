@@ -3,6 +3,7 @@
 #include <stdint-gcc.h>
 
 #include "config.h"
+#include "firmware/gpio.h"
 #include "firmware/nvic.h"
 #include "firmware/systick.h"
 #include "firmware/timer.h"
@@ -17,7 +18,11 @@ StepperController *steppers[4];
 
 void stepper_update_isr(int timer_num) {
    StepperController *stepper = steppers[timer_num - 1];
-   ++stepper->position;
+   if (stepper->direction == FORWARD) {
+      ++stepper->position;
+   } else {
+      --stepper->position;
+   }
 }
 
 void stepper_tim1_update_isr(void) {
@@ -38,12 +43,14 @@ void stepper_init(StepperController *stepper) {
    timer_pwm_init(stepper->timer, 1);
    timer_pwm_duty_cycle(stepper->timer, 1, DUTY_CYCLE);
    timer_enable_update_isr(stepper->timer);
+   gpio_set_mode(stepper->direction_gpio, stepper->direction_pin, GPIO_MODE_OUTPUT);
 }
 
 uint16_t stepper_rpm(StepperController *stepper, uint32_t now) {
    (void)now;
+   stepper->direction = stepper->position < stepper->target ? FORWARD : BACKWARD;
 
-   if (stepper->position >= stepper->target) {
+   if (stepper->position == stepper->target) {
       return 0;
    }
 
@@ -68,6 +75,8 @@ void stepper_update(StepperController *stepper) {
 
    uint16_t prescaler = 60 * CLOCK_SPEED / ticks_per_min;
    timer_pwm_config(stepper->timer, prescaler, CYCLE_WIDTH);
+   bool direction_pin_high = stepper->direction == BACKWARD;
+   gpio_write_pin(stepper->direction_gpio, stepper->direction_pin, direction_pin_high);
 
    if (!stepper->enabled) {
       stepper->enabled = true;

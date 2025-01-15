@@ -4,6 +4,11 @@
 #include "firmware/gpio.h"
 #include <stdint-gcc.h>
 
+typedef enum {
+   FORWARD,
+   BACKWARD,
+} StepperDirection;
+
 typedef struct {
    uint8_t timer;
    volatile Gpio *direction_gpio;
@@ -13,6 +18,7 @@ typedef struct {
    int16_t position;
    int16_t target;
    bool enabled;
+   StepperDirection direction;
 } StepperController;
 
 // Before calling this, ensure the following fields are initialized:
